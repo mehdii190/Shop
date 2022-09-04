@@ -164,6 +164,7 @@ def mproducts():
     cnt.execute(sql,(pname,quantity,bprice,sprice,edate,exdate,brand,reserve1))
     cnt.commit()
     print("data inserted !")
+    
 def buy():
     global islogin, userid
     if islogin == False:
