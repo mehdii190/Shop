@@ -164,7 +164,7 @@ def mproducts():
     cnt.execute(sql,(pname,quantity,bprice,sprice,edate,exdate,brand,reserve1))
     cnt.commit()
     print("data inserted !")
-    
+
 def buy():
     global islogin, userid
     if islogin == False:
@@ -213,7 +213,7 @@ def plist():
     for row in rows:
         print(row[0],'Q: ',row[1])
 
-
+#############################
 while True:
     plan = input("please enter your plan? (submit , login , manage , buy , list , exit): ")
     if plan == "submit":
