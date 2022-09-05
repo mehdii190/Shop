@@ -226,28 +226,32 @@ def alltranc():
     # INNER JOIN products ON transactions.pid=products.id bada bezar
     cursor = cnt.execute(sql)
     for row in cursor:
-        print('user: ',row[0],)
+        print('user: ',row[0],', date ',row[1])
         # products: ',row[1],'Q:',row[2],'date: ',row[3]
 
 
 #############################
 while True:
-    plan = input("please enter your plan? (submit , login , manage , buy , list , all tranc , exit): ")
-    if plan == "submit":
+    plan = input('''please enter your plan ??
+submit = 1 || login = 2 || logout = 3
+manage = 4 || buy = 5 || list = 6 
+all tranc = 7 || exit = 8 
+here : ''')
+    if plan == "1":
         submit()
-    elif plan == "login":
+    elif plan == "2":
         login()
-    elif plan == "logout":
+    elif plan == "3":
         logout()
-    elif plan == "manage":
+    elif plan == "4":
         mproducts()
-    elif plan=="buy":
+    elif plan=="5":
         buy()
-    elif plan=="list":
+    elif plan=="6":
         plist()
-    elif plan=="all tranc":
+    elif plan=="7":
         alltranc()
-    elif plan == "exit":
+    elif plan == "8":
         break
     else:
         print("wrong input!!")
