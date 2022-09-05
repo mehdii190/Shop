@@ -213,9 +213,26 @@ def plist():
     for row in rows:
         print(row[0],'Q: ',row[1])
 
+
+def alltranc():
+    #global islogin,isadmin
+    #if not isadmin:
+        #print("you are not admin")
+        #return
+    #if not islogin:
+        #print("you are not login !")
+        #return
+    sql="SELECT users.lname,transactions.bdate FROM transactions INNER JOIN users ON transactions.uid=users.id"
+    # INNER JOIN products ON transactions.pid=products.id bada bezar
+    cursor = cnt.execute(sql)
+    for row in cursor:
+        print('user: ',row[0],)
+        # products: ',row[1],'Q:',row[2],'date: ',row[3]
+
+
 #############################
 while True:
-    plan = input("please enter your plan? (submit , login , manage , buy , list , exit): ")
+    plan = input("please enter your plan? (submit , login , manage , buy , list , all tranc , exit): ")
     if plan == "submit":
         submit()
     elif plan == "login":
@@ -228,6 +245,8 @@ while True:
         buy()
     elif plan=="list":
         plist()
+    elif plan=="all tranc":
+        alltranc()
     elif plan == "exit":
         break
     else:
