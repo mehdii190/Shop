@@ -228,14 +228,28 @@ class shop():
     def forget(self):
         print("password forget !")
         ncode = input("enter your code meli: ")
-        sql = "SELECT * FROM users WHERE ncode=?"
+        sql = "SELECT * FROM users WHERE ncode=? "
         cursor = cnt.execute(sql,(ncode,))
         row = cursor.fetchone()
         if row is not None:
             print("your password: ", row[6])
         else:
             print("wrong !")
-        
+
+
+    def updatepass(self):
+        #global islogin
+        #if islogin == False:
+            #print('first you must login')
+            #return
+        username = input("enter your username: ")
+        newpass = input("enter your password for change: ")
+        sql=" UPDATE users SET password=? WHERE username=?"
+        cnt.execute(sql,(newpass,username,))
+        cnt.commit()
+        print("your password changed and its ok !")
+
+
 
 #############################
 ok=shop()
@@ -243,7 +257,7 @@ while True:
     plan = input('''please enter your plan ??
 submit = 1 || login = 2 || logout = 3
 manage = 4 || buy = 5 || list = 6 
-all tranc = 7 || forget pass = 8 || exit = 9 
+all tranc = 7 || forget pass = 8 || change password = 9 || exit = 0 
 here : ''')
     if plan == "1":
         ok.submit()
@@ -261,7 +275,9 @@ here : ''')
         ok.alltranc()
     elif plan=="8":
         ok.forget()
-    elif plan == "9":
+    elif plan=="9":
+        ok.updatepass()
+    elif plan == "0":
         break
     else:
         print("wrong input!!")
