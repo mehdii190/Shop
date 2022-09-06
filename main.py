@@ -82,176 +82,176 @@ def validation(fname, lname, addr, username, password, cpassword, ncode):
         errorlist.append(msg)
     return errorlist
 
+class shop():
+    def submit(self):
+        fname = input("please enter your name? ")
+        lname = input("please enter your lname? ")
+        addr = input("please enter your addr? ")
+        grade = 0
+        reserve = ""
+        edate = datetime.today().strftime('%Y-%m-%d')
+        username = input("please enter your username? ")
+        password = input("please enter your password? ")
+        cpassword = input("please enter your password confirmation? ")
+        ncode = input("please enter your natinal code? ")
+        result = validation(fname, lname, addr, username, password, cpassword, ncode)
+        if len(result) > 0:
+            for err_msg in result:
+                print(err_msg)
+            return
 
-def submit():
-    fname = input("please enter your name? ")
-    lname = input("please enter your lname? ")
-    addr = input("please enter your addr? ")
-    grade = 0
-    reserve = ""
-    edate = datetime.today().strftime('%Y-%m-%d')
-    username = input("please enter your username? ")
-    password = input("please enter your password? ")
-    cpassword = input("please enter your password confirmation? ")
-    ncode = input("please enter your natinal code? ")
-    result = validation(fname, lname, addr, username, password, cpassword, ncode)
-    if len(result) > 0:
-        for err_msg in result:
-            print(err_msg)
-        return
+        sql = '''INSERT INTO users(fname,lname,addr,grade,username,password,cpassword,edate,ncode,reserve1)\
+            VALUES(?,?,?,?,?,?,?,?,?,?)'''
+        cnt.execute(sql, (fname, lname, addr, grade, username, password, cpassword, edate, ncode, reserve))
+        cnt.commit()
+        print("submit done successfully!")
 
-    sql = '''INSERT INTO users(fname,lname,addr,grade,username,password,cpassword,edate,ncode,reserve1)\
-        VALUES(?,?,?,?,?,?,?,?,?,?)'''
-    cnt.execute(sql, (fname, lname, addr, grade, username, password, cpassword, edate, ncode, reserve))
-    cnt.commit()
-    print("submit done successfully!")
+    def login(self):
+        global islogin, isadmin, userid
+        if islogin:  # if(islogin==True)
+            print("you are already logged in")
+            return
 
+        user = input("please enter your username: ")
+        passw = input("please enter your password: ")
+        sql = ''' SELECT username,id FROM users where username=? AND password=?'''
+        cursor = cnt.execute(sql, (user, passw))
+        rows = cursor.fetchone()
+        if not rows:
+            print("wrong user or pass ")
+            return
+        print("welcome to your account")
+        userid = rows[1]
+        islogin = True
+        if user == "admin":
+            isadmin = True
 
-def login():
-    global islogin, isadmin,userid
-    if islogin:  # if(islogin==True)
-        print("you are already logged in")
-        return
+    def logout(self):
+        global islogin, isadmin, userid
+        islogin = False
+        isadmin = False
+        userid = ""
+        print("you are logged out now!")
 
-    user = input("please enter your username: ")
-    passw = input("please enter your password: ")
-    sql = ''' SELECT username,id FROM users where username=? AND password=?'''
-    cursor = cnt.execute(sql,(user, passw))
-    rows = cursor.fetchone()
-    if not rows:
-        print("wrong user or pass ")
-        return
-    print("welcome to your account")
-    userid = rows[1]
-    islogin = True
-    if user == "admin":
-        isadmin = True
+    def mproducts(self):
+        global islogin, isadmin
 
+        if islogin == False and isadmin == False:
+            print("you are not allowed for this action")
+            return
+        print("ok !")
+        pname = input("enter your name: ")
+        quantity = input("enter your quant: ")
+        bprice = input("enter your price: ")
+        sprice = input("enter your price for sell: ")
+        edate = datetime.today().strftime('%Y-%m-%d')
+        exdate = ""
+        brand = input("brand: ")
+        reserve1 = ""
+        #######################################
+        sql = '''SELECT pname FROM products  WHERE pname=?'''
+        corsur = cnt.execute(sql, (pname,))
+        row = corsur.fetchall()
+        if len(row) > 0:
+            print("products name is already exist!")
+            return
+        ####################################
+        sql = ''' INSERT INTO products(pname,quantity,bprice,sprice,edate,exdate,brand,reserve1)
+            VALUES(?,?,?,?,?,?,?,?)'''
+        cnt.execute(sql, (pname, quantity, bprice, sprice, edate, exdate, brand, reserve1))
+        cnt.commit()
+        print("data inserted !")
 
-def logout():
-    global islogin, isadmin ,userid
-    islogin = False
-    isadmin = False
-    userid=""
-    print("you are logged out now!")
+    def buy(self):
+        global islogin, userid
+        if islogin == False:
+            print('first you must login')
+            return
+        bdate = datetime.today().strftime('%Y-%m-%d')
+        pname = input('enter a product name you want to buy:  ')
+        sql = " SELECT * FROM products WHERE pname=? "
+        cursor = cnt.execute(sql, (pname,))
+        row = cursor.fetchone()
+        if not row:
+            print('wrong product name')
+            return
+        print('product:', row[1], 'Q:', row[2], ' brand:', row[7], ' price:', row[4])
+        num = int(input('number of products? '))
+        if num <= 0:
+            print('wrong number')
+            return
+        if num > int(row[2]):
+            print('not enough number of products')
+            return
+        print('total cost ', num * row[4])
+        confirm = input('are you sure? yes/no ')
+        if confirm != 'yes':
+            print('canceled by user')
+            return
+        newquant = int(row[2]) - num
+        sql = "UPDATE products SET quantity=? WHERE pname=?"
+        cnt.execute(sql, (newquant, pname))
+        print('thanks for your shopping')
+        cnt.commit()
 
+        comment = ""
+        reserve1 = ""
 
-def mproducts():
-    global islogin, isadmin
+        sql = '''INSERT INTO transactions (uid,pid,bdate,qnt,comment,reserve1)
+                   VALUES(?,?,?,?,?,?)'''
+        cnt.execute(sql, (userid, row[0], bdate, num, comment, reserve1))
+        cnt.commit()
 
-    if islogin == False and isadmin == False:
-        print("you are not allowed for this action")
-        return
-    print("ok !")
-    pname = input("enter your name: ")
-    quantity = input("enter your quant: ")
-    bprice = input("enter your price: ")
-    sprice = input("enter your price for sell: ")
-    edate = datetime.today().strftime('%Y-%m-%d')
-    exdate = ""
-    brand = input("brand: ")
-    reserve1 = ""
-    #######################################
-    sql = '''SELECT pname FROM products  WHERE pname=?'''
-    corsur = cnt.execute(sql, (pname,))
-    row = corsur.fetchall()
-    if len(row)>0:
-        print("products name is already exist!")
-        return
-    ####################################
-    sql = ''' INSERT INTO products(pname,quantity,bprice,sprice,edate,exdate,brand,reserve1)
-        VALUES(?,?,?,?,?,?,?,?)'''
-    cnt.execute(sql,(pname,quantity,bprice,sprice,edate,exdate,brand,reserve1))
-    cnt.commit()
-    print("data inserted !")
+    def plist(self):
+        sql = "SELECT pname,quantity FROM products WHERE quantity > 0 "
+        cursor = cnt.execute(sql)
+        rows = cursor.fetchall()
+        for row in rows:
+            print(row[0], 'Q: ', row[1])
 
-def buy():
-    global islogin, userid
-    if islogin == False:
-        print('first you must login')
-        return
-    bdate = datetime.today().strftime('%Y-%m-%d')
-    pname = input('enter a product name you want to buy:  ')
-    sql = " SELECT * FROM products WHERE pname=? "
-    cursor = cnt.execute(sql, (pname,))
-    row = cursor.fetchone()
-    if not row:
-        print('wrong product name')
-        return
-    print('product:', row[1], 'Q:', row[2], ' brand:', row[7], ' price:', row[4])
-    num = int(input('number of products? '))
-    if num <= 0:
-        print('wrong number')
-        return
-    if num > int(row[2]):
-        print('not enough number of products')
-        return
-    print('total cost ', num * row[4])
-    confirm = input('are you sure? yes/no ')
-    if confirm != 'yes':
-        print('canceled by user')
-        return
-    newquant = int(row[2]) - num
-    sql = "UPDATE products SET quantity=? WHERE pname=?"
-    cnt.execute(sql, (newquant, pname))
-    print('thanks for your shopping')
-    cnt.commit()
+    def alltranc(self):
+        # global islogin,isadmin
+        # if not isadmin:
+        # print("you are not admin")
+        # return
+        # if not islogin:
+        # print("you are not login !")
+        # return
+        sql = "SELECT users.lname,transactions.bdate FROM transactions INNER JOIN users ON transactions.uid=users.id"
+        # INNER JOIN products ON transactions.pid=products.id bada bezar
+        cursor = cnt.execute(sql)
+        for row in cursor:
+            print('user: ', row[0], ', date ', row[1])
+            # products: ',row[1],'Q:',row[2],'date: ',row[3]
 
-    comment=""
-    reserve1=""
-
-    sql = '''INSERT INTO transactions (uid,pid,bdate,qnt,comment,reserve1)
-               VALUES(?,?,?,?,?,?)'''
-    cnt.execute(sql, (userid, row[0], bdate, num,comment,reserve1))
-    cnt.commit()
-
-
-def plist():
-    sql="SELECT pname,quantity FROM products WHERE quantity > 0 "
-    cursor = cnt.execute(sql)
-    rows=cursor.fetchall()
-    for row in rows:
-        print(row[0],'Q: ',row[1])
-
-
-def alltranc():
-    #global islogin,isadmin
-    #if not isadmin:
-        #print("you are not admin")
-        #return
-    #if not islogin:
-        #print("you are not login !")
-        #return
-    sql="SELECT users.lname,transactions.bdate FROM transactions INNER JOIN users ON transactions.uid=users.id"
-    # INNER JOIN products ON transactions.pid=products.id bada bezar
-    cursor = cnt.execute(sql)
-    for row in cursor:
-        print('user: ',row[0],', date ',row[1])
-        # products: ',row[1],'Q:',row[2],'date: ',row[3]
-
+    def forget(self):
+        pass
 
 #############################
+ok=shop()
 while True:
     plan = input('''please enter your plan ??
 submit = 1 || login = 2 || logout = 3
 manage = 4 || buy = 5 || list = 6 
-all tranc = 7 || exit = 8 
+all tranc = 7 || exit = 9 
 here : ''')
     if plan == "1":
-        submit()
+        ok.submit()
     elif plan == "2":
-        login()
+        ok.login()
     elif plan == "3":
-        logout()
+        ok.logout()
     elif plan == "4":
-        mproducts()
+        ok.mproducts()
     elif plan=="5":
-        buy()
+        ok.buy()
     elif plan=="6":
-        plist()
+        ok.plist()
     elif plan=="7":
-        alltranc()
-    elif plan == "8":
+        ok.alltranc()
+    elif plan=="8":
+        ok.forget()
+    elif plan == "9":
         break
     else:
         print("wrong input!!")
