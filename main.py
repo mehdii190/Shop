@@ -83,6 +83,7 @@ def validation(fname, lname, addr, username, password, cpassword, ncode):
     return errorlist
 
 class shop():
+
     def submit(self):
         fname = input("please enter your name? ")
         lname = input("please enter your lname? ")
@@ -225,7 +226,16 @@ class shop():
             # products: ',row[1],'Q:',row[2],'date: ',row[3]
 
     def forget(self):
-        pass
+        print("password forget !")
+        ncode = input("enter your code meli: ")
+        sql = "SELECT * FROM users WHERE ncode=?"
+        cursor = cnt.execute(sql,(ncode,))
+        row = cursor.fetchone()
+        if row is not None:
+            print("your password: ", row[6])
+        else:
+            print("wrong !")
+        
 
 #############################
 ok=shop()
@@ -233,7 +243,7 @@ while True:
     plan = input('''please enter your plan ??
 submit = 1 || login = 2 || logout = 3
 manage = 4 || buy = 5 || list = 6 
-all tranc = 7 || exit = 9 
+all tranc = 7 || forget pass = 8 || exit = 9 
 here : ''')
     if plan == "1":
         ok.submit()
