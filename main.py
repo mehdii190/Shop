@@ -224,6 +224,7 @@ class shop():
         for row in cursor:
             print('user: ', row[0], ', date ', row[1])
             # products: ',row[1],'Q:',row[2],'date: ',row[3]
+        print("############################################")
 
     def forget(self):
         print("password forget !")
@@ -235,6 +236,7 @@ class shop():
             print("your password: ", row[6])
         else:
             print("wrong !")
+        print("############################################")
 
 
     def updatepass(self):
@@ -248,6 +250,18 @@ class shop():
         cnt.execute(sql,(newpass,username,))
         cnt.commit()
         print("your password changed and its ok !")
+        print("############################################")
+
+    def showme(self):
+        sql='''SELECT * FROM transactions'''
+        cursor = cnt.execute(sql)
+        row = cursor.fetchone()
+        if row is None:
+            print("wrong")
+        else:
+            print("date: ",row[3] ,"mojod kala: ",row[4])
+
+        print("############################################")
 
 
 
@@ -257,7 +271,7 @@ while True:
     plan = input('''please enter your plan ??
 submit = 1 || login = 2 || logout = 3
 manage = 4 || buy = 5 || list = 6 
-all tranc = 7 || forget pass = 8 || change password = 9 || exit = 0 
+all tranc = 7 || forget pass = 8 || change password = 9 ||  show me order and date = 10  || exit = 0 
 here : ''')
     if plan == "1":
         ok.submit()
@@ -277,7 +291,11 @@ here : ''')
         ok.forget()
     elif plan=="9":
         ok.updatepass()
+    elif plan=="10":
+        ok.showme()
     elif plan == "0":
+        print('''thanks for shop !
+good luck !''')
         break
     else:
         print("wrong input!!")
