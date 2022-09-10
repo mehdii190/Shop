@@ -60,27 +60,28 @@ userid = ""
 
 #################################### main program ######################################################
 
-def validation(fname, lname, addr, username, password, cpassword, ncode):
-    errorlist = []
-    if fname == "" or lname == "" or addr == "" or username == "" or password == "" or cpassword == "" or ncode == "":
-        msg = "please fill all the blanks"
-        errorlist.append(msg)
-    if len(password) < 8:
-        msg = "pass length must be at least 8"
-        errorlist.append(msg)
-    if password != cpassword:
-        msg = "pass and confirm mismatch"
-        errorlist.append(msg)
-    if not ncode.isnumeric():
-        msg = "national code shold be numeric"
-        errorlist.append(msg)
-    sql = 'select *from users where username=?'
-    cursor = cnt.execute(sql, (username,))
-    rows = cursor.fetchall()
-    if len(rows) != 0:
-        msg = 'username already exist'
-        errorlist.append(msg)
-    return errorlist
+class valid():
+    def validation(self,fname, lname, addr, username, password, cpassword, ncode):
+        errorlist = []
+        if fname == "" or lname == "" or addr == "" or username == "" or password == "" or cpassword == "" or ncode == "":
+            msg = "please fill all the blanks"
+            errorlist.append(msg)
+        if len(password) < 8:
+            msg = "pass length must be at least 8"
+            errorlist.append(msg)
+        if password != cpassword:
+            msg = "pass and confirm mismatch"
+            errorlist.append(msg)
+        if not ncode.isnumeric():
+            msg = "national code shold be numeric"
+            errorlist.append(msg)
+        sql = 'select *from users where username=?'
+        cursor = cnt.execute(sql, (username,))
+        rows = cursor.fetchall()
+        if len(rows) != 0:
+            msg = 'username already exist'
+            errorlist.append(msg)
+        return errorlist
 
 class shop():
 
@@ -95,7 +96,7 @@ class shop():
         password = input("please enter your password? ")
         cpassword = input("please enter your password confirmation? ")
         ncode = input("please enter your natinal code? ")
-        result = validation(fname, lname, addr, username, password, cpassword, ncode)
+        result = valid.validation(fname, lname, addr, username, password, cpassword, ncode)
         if len(result) > 0:
             for err_msg in result:
                 print(err_msg)
